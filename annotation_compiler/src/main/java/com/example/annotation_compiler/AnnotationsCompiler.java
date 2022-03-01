@@ -69,6 +69,8 @@ public class AnnotationsCompiler extends AbstractProcessor {
 
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,"jett---------------"+set);
         //获取APP中所有用到了BindView注解的对象
+        //比如：@BindView(R.id.textView)
+        //    TextView textView;
         Set<? extends Element> elementsAnnotatedWith = roundEnvironment.getElementsAnnotatedWith(BindView.class);
 
 //        TypeElement//类
@@ -83,13 +85,14 @@ public class AnnotationsCompiler extends AbstractProcessor {
             List<VariableElement> variableElements = map.get(activityName);
             if (variableElements == null) {
                 variableElements = new ArrayList<>();
+                //同个activityName下面的注解对象放在一起
                 map.put(activityName, variableElements);
             }
             variableElements.add(variableElement);
         }
 
 
-        //开始生成文件
+        //开始生成文件，拼接后的总体代码
 //        package com.example.butterknife_framework_demo;
 //        import com.example.butterknife_framework_demo.IBinder;
 //        public class MainActivity_ViewBinding implements IBinder<com.example.butterknife_framework_demo.MainActivity> {
@@ -99,6 +102,7 @@ public class AnnotationsCompiler extends AbstractProcessor {
 //
 //            }
 //        }
+        //开始生成文件  通过下面的代码，最终会拼成一个java文件，总体代码看上面的 注释代码
         if (map.size() > 0) {
             Writer writer = null;
             Iterator<String> iterator = map.keySet().iterator();
